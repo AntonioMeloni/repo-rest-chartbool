@@ -5,36 +5,34 @@ $(document).ready(function () {
         url:'http://157.230.17.132:4022/sales',
         method: 'GET',
         success: function (data) {
+
             var vendite = data;
-            for (var i = 0; i < vendite.length; i++) {
-                var vendita = vendite[i];
-                var datiVendita = {
-                    nomeVenditore: vendita.salesman,
-                    quantity: parseInt(vendita.amount),
-                    date: moment(vendita.date, 'DD-MM-YYYY').format('MMMM')
-                }
-
-                venditeTotali.push(datiVendita);
-
-            }
+            var fatturatoMese = [0,0,0,0,0,0,0,0,0,0,0,0];
             var objVenditeMensile = {};
+            var objSalesMan = {};
+            var fatturatoTotale = 0;
+            for (var i = 0; i < vendite.length; i++) {
+                var oggettoSingolo = vendite[i];
+                var mese = parseInt(moment(oggettoSingolo.date, 'DD-MM-YYYY').format('M')); //1
+                console.log(oggettoSingolo.date, mese)
+                var nome = oggettoSingolo.salesman;
+                fatturatoTotale += parseInt(oggettoSingolo.amount);
 
-            for (var i = 0; i < venditeTotali.length; i++) {
-                var oggettoSingolo = venditeTotali[i];
-                var mese = oggettoSingolo.date;
-                if (objVenditeMensile[mese] === undefined) {
-                    objVenditeMensile[mese] = 0;
+                fatturatoMese[mese - 1] += oggettoSingolo.amount;
+
+                if (objSalesMan[nome] === undefined) {
+                    objSalesMan[nome] = 0;
                 }
-                objVenditeMensile[mese] += oggettoSingolo.quantity;
+                objSalesMan[nome] += oggettoSingolo.amount;
             }
-            console.log(objVenditeMensile);
 
-            var labelsMese = [];
-            var dataMese = [];
+            console.log(fatturatoMese);
 
-            for (var key in objVenditeMensile) {
-                labelsMese.push(key);
-                dataMese.push(objVenditeMensile[key]);
+            var labelsNomiSales = [];
+            var dataVendite = [];
+            for (var key in objSalesMan) {
+                labelsNomiSales.push(key);
+                dataVendite.push(Math.round((objSalesMan[key]/fatturatoTotale)*100));
             }
 
             var ctx = $('#grafico-vendite');
@@ -42,19 +40,35 @@ $(document).ready(function () {
                 type: 'line',
 
                 data: {
-                    labels: labelsMese,
+                    labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre', ],
                     datasets: [{
                         label: 'Grafico Vendite 2017',
                         backgroundColor: 'rgb(255, 99, 132)',
                         borderColor: 'rgb(255, 99, 132)',
-                        data: dataMese
+                        data: fatturatoMese ,
                     }]
                 },
 
 
             });
 
-    },
+            var ctx = $('#grafico-salesman');
+            var chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                        data: dataVendite,
+                        backgroundColor: ['lightcoral',
+                         'lightblue',
+                         'lightgreen',
+                         'yellow']
+                    }],
+
+
+                    labels: labelsNomiSales
+                }
+            });
+        },
         error: function () {
 
         }
