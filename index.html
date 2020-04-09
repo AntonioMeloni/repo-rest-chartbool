@@ -7,14 +7,33 @@
         <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js" charset="utf-8"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/it.js" integrity="sha256-D8y560ZGsKY1LoAajKkQCG7y0Vkye361MH4yFv2K5kk=" crossorigin="anonymous"></script>
-        <title>Chartbool</title>
+        <title>ChartBool</title>
     </head>
     <body>
-        <div class="container">
-            <canvas id="grafico-vendite"></canvas>
+        <div class="input-container">
+            <h2>Assegna nuova vendita</h2>
+            <div class="inputs">
+                <select class="vendor-name" name="">
+                    <option value="Giuseppe">Giuseppe</option>
+                    <option value="Marco">Marco</option>
+                    <option value="Roberto">Roberto</option>
+                    <option value="Riccardo">Riccardo</option>
+                </select>
+                <input class="data-vendita"type="date" min="2017-01-01" max="2017-12-31">
+                <input class="valore-vendita"type="number" name="" value="">
+                <button class="btn-input">Inserisci</button>
+            </div>
         </div>
+
         <div class="container">
-            <canvas id="grafico-salesman"></canvas>
+
+            <div class="graphic-container">
+                <canvas id="grafico-vendite"></canvas>
+            </div>
+            <div class="graphic-container">
+                <canvas id="grafico-salesman"></canvas>
+            </div>
+
         </div>
 
         <script src="js/main.js" charset="utf-8"></script>
