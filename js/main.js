@@ -20,6 +20,8 @@ $(document).ready(function () {
                 //do in pasto a charjs i 2 array
                 var datiMensili = costruttoreDatiMensili(data);
                 createLineChart(datiMensili.mese,datiMensili.vendite);
+                var datiquarter = costruttoreDatiMensili(data);
+                createBarChart(datiMensili.quarter,datiMensili.venditaQuarter);
                 var fatturato = fatturatoTotale(data);
                 var datiVenditori = costruttoreDatiVenditori(data, fatturato);
                 createPieChart(datiVenditori.vendite,datiVenditori.venditori);
@@ -43,7 +45,7 @@ $(document).ready(function () {
                 console.log(data);
             },
             error: function (err) {
-                alert('Errrore');
+                alert('Errore');
             }
         })
     }
@@ -63,21 +65,42 @@ $(document).ready(function () {
             novembre: 0,
             dicembre: 0,
         };
+
+        var venditeQuarter = {
+            1: 0,
+            2: 0,
+            3: 0,
+            4: 0
+        }
         for (var i = 0; i < vendite.length; i++) { //ciclo nelle vendite che ho ricevuto dal GET er aggiugngere.amount all'oggetto venditeMensili
             var vendita = vendite[i]; //valuto ogni singola vendita
             var dataVendita = vendita.date; //estrapolo la data dall'oggetto vendita
             var meseVendita = moment(dataVendita, 'DD/MM/YYYY').format('MMMM');// trasformo la data nel nome del mese
+            var quarterMese = moment(vendita.date, 'DD/MM/YYYY').quarter();
+            console.log(quarterMese);
             venditeMensili[meseVendita] += parseInt(vendita.amount); //uso il nome del mese appena ricavato per riconsocere la chiave dell'oggetto venditeMensile per aggiungere a questa la vendita appatenente a quel mese
+            venditeQuarter[quarterMese] += parseInt(vendita.amount);
         }
+        console.log(venditeQuarter);
         var arrayMesi=[]; //inizializzo i due array da utilizzare in charjs
         var arrayVendite=[];
         for (var nomeMese in venditeMensili) { //ciclo allinterno dell'oggetto venditeMensili per trasformare la coppia chive-valore in due array
             arrayMesi.push(nomeMese); //inserisco il nome del mese nell'arrayMesi
             arrayVendite.push(venditeMensili[nomeMese]); // inserisco nell'arreyVendite la somma di tutte le vendite relative a quel mese
         }
+        var arrayQuarter=[]; //inizializzo i due array da utilizzare in charjs
+        var arrayVenditeQuarter=[];
+        for (var quarter in venditeQuarter) { //ciclo allinterno dell'oggetto venditeMensili per trasformare la coppia chive-valore in due array
+            arrayQuarter.push(quarter); //inserisco il nome del mese nell'arrayMesi
+            arrayVenditeQuarter.push(venditeQuarter[quarter]); // inserisco nell'arreyVendite la somma di tutte le vendite relative a quel mese
+        }
+        console.log(arrayQuarter, arrayVenditeQuarter);
+
         return {
             mese: arrayMesi,
-            vendite: arrayVendite
+            vendite: arrayVendite,
+            quarter: arrayQuarter,
+            venditaQuarter: arrayVenditeQuarter
         };
     }
 
@@ -132,12 +155,39 @@ $(document).ready(function () {
                 });
     }
 
+    function createBarChart(labels, data) {
+        var ctx = $('#grafico-bar');
+                var barchart = new Chart(ctx, {
+                    type: 'bar',
+
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Grafico  Quarter Vendite 2017',
+                            backgroundColor: [
+                             'lightcoral',
+                             'lightblue',
+                             'lightgreen',
+                             'yellow'],
+
+                            data: data
+                        }]
+                    },
+
+
+                });
+    }
+
     function createPieChart(arrayData,arrayLabels) {
         var ctx = $('#grafico-salesman');
         var piechart = new Chart(ctx, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
                 datasets: [{
+                    barPercentage: 0.5,
+                    barThickness: 6,
+                    maxBarThickness: 8,
+                    minBarLength: 2,
                     data: arrayData,
                     backgroundColor: [
                      'lightcoral',
